@@ -11,20 +11,12 @@
       <template v-for="(column, index) in columns">
         <el-table-column
           v-if="column.type"
-          :type="column.type"
-          :label="column.label"
-          :width="column.width"
-          :fixed="column.fixed"
+          v-bind="column"
           :key="index">
         </el-table-column>
         <el-table-column
           v-else
-          :prop="column.prop"
-          :label="column.label"
-          :width="column.width"
-          :fixed="column.fixed"
-          :show-overflow-tooltip="column.showOverflowTooltip"
-          :sortable="column.sortable"
+          v-bind="column"
           :key="index">
           <template slot-scope="scope">
             <span v-if="column.slotName">
