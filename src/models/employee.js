@@ -1,4 +1,4 @@
-import { createCurdModel } from './index'
+import { createCurdModel } from '.'
 import { parseTime } from '@/utils'
 
 const sexMap = {
@@ -21,9 +21,19 @@ const checkAge = (rule, value, callback) => {
 export default createCurdModel({
   sexes: [{ value: '1', label: '男' }, { value: '2', label: '女' }],
   sexMap,
+  paginationConfig: {
+    keyConfig: {
+      currentPage: 'page',
+      pageSize: 'limit'
+    }
+  },
+  sortConfig: {
+    defaultSort: { prop: 'id', order: 'descending' },
+    keyConfig: { prop: 'sortProp', order: 'sortOrder' }
+  },
   columns: [
     { type: 'selection', width: '55', fixed: true },
-    { prop: 'id', label: 'ID', width: '80', fixed: true },
+    { prop: 'id', label: 'ID', width: '80', fixed: true, sortable: 'custom' },
     { prop: 'name', label: '姓名', fixed: true },
     {
       prop: 'sex',
@@ -36,6 +46,7 @@ export default createCurdModel({
     {
       prop: 'joinDate',
       label: '入职时间',
+      sortable: 'custom',
       render: row => {
         return parseTime(row.joinDate, '{y}-{m}-{d}')
       }

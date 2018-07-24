@@ -36,6 +36,8 @@
       url="/employee"
       :columns="model.columns"
       :query="model.query"
+      :sort-config="model.sortConfig"
+      :pagination-config="model.paginationConfig"
       :rows-will-create="model.rowsWillCreate"
       :rows-will-delete="model.rowsWillDelete"
       :rows-will-update="model.rowsWillUpdate"
@@ -109,7 +111,7 @@
 </template>
 <script>
 import deepEqual from 'deep-equal'
-import StandardTable from '@/components/table/standard'
+import StandardTable from '@/components/standard-table'
 import model from '@/models/employee'
 
 export default {

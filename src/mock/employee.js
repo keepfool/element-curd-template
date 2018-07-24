@@ -30,7 +30,7 @@ function dateToTime (value) {
 export default {
   name: 'employee',
   fetch: config => {
-    const { page = 1, limit = 10, name, sex, startJoinDate, endJoinDate } = param2Obj(config.url)
+    const { page = 1, limit = 10, name, sex, startJoinDate, endJoinDate, sortProp, sortOrder } = param2Obj(config.url)
 
     let mockList = List.filter(item => {
       if (name && item.name.indexOf(name) < 0) return false
@@ -38,6 +38,15 @@ export default {
       if (startJoinDate && endJoinDate && (item.joinDate < startJoinDate || item.joinDate > endJoinDate)) return false
       return true
     })
+
+    if (sortProp) {
+      mockList = mockList.sort((a, b) => {
+        let order = sortOrder === 'ascending' ? 1 : -1
+        if (a[sortProp] > b[sortProp]) return order
+        else if (a[sortProp] < b[sortProp]) return -order
+        else return 0
+      })
+    }
 
     const pageList = mockList.filter((item, index) => index < limit * page && index >= limit * (page - 1))
 

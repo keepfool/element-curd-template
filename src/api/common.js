@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 function wrapRequest (options) {
-  let { url, method, query, data } = options
+  let { url, method, params, data } = options
 
   let config = {
     url,
@@ -9,7 +9,7 @@ function wrapRequest (options) {
   }
 
   if (method.toLowerCase() === 'get') {
-    config.params = query
+    config.params = params
   } else {
     config.data = data
   }
