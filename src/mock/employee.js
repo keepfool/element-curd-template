@@ -30,12 +30,14 @@ function dateToTime (value) {
 export default {
   name: 'employee',
   fetch: config => {
-    const { page = 1, limit = 10, name, sex, startJoinDate, endJoinDate, sortProp, sortOrder } = param2Obj(config.url)
+    const { page = 1, limit = 10, name, sex, joinDate, sortProp, sortOrder } = param2Obj(config.url)
+
+    let joinDateArray = joinDate && joinDate.split(',')
 
     let mockList = List.filter(item => {
       if (name && item.name.indexOf(name) < 0) return false
       if (sex && item.sex !== sex) return false
-      if (startJoinDate && endJoinDate && (item.joinDate < startJoinDate || item.joinDate > endJoinDate)) return false
+      if (joinDateArray && joinDateArray.length > 0 && (item.joinDate < joinDateArray[0] || item.joinDate > joinDateArray[1])) return false
       return true
     })
 

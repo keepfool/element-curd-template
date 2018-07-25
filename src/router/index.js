@@ -12,9 +12,14 @@ let router = new Router({
       component: () => import('@/views/dashboard/index')
     },
     {
-      path: '/demo',
-      name: 'demo',
-      component: () => import('@/views/demo/index')
+      path: '/demo/basic',
+      name: 'basic-demo',
+      component: () => import('@/views/demo/basic')
+    },
+    {
+      path: '/demo/complete',
+      name: 'complete-demo',
+      component: () => import('@/views/demo/complete')
     }
   ]
 })

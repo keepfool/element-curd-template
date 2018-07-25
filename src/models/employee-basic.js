@@ -1,6 +1,8 @@
 import { createCurdModel } from '.'
 import { parseTime } from '@/utils'
 
+const sexes = [{ value: '1', label: '男' }, { value: '2', label: '女' }]
+
 const sexMap = {
   '1': '男',
   '2': '女'
@@ -19,7 +21,7 @@ const checkAge = (rule, value, callback) => {
 }
 
 export default createCurdModel({
-  sexes: [{ value: '1', label: '男' }, { value: '2', label: '女' }],
+  sexes,
   sexMap,
   paginationConfig: {
     keyConfig: {

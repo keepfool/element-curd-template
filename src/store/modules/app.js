@@ -2,7 +2,8 @@ const app = {
   state: {
     navs: [
       { text: '首页', path: '/', active: false },
-      { text: '示例', path: '/demo', active: false }
+      { text: '基础示例', path: '/demo/basic', active: false },
+      { text: '完全示例', path: '/demo/complete', active: false }
     ]
   },
   mutations: {

@@ -4,29 +4,24 @@
     <!--查询-->
     <el-form class="el-standard-curd-query-form" :inline="true" :model="model.queryForm" label-width="80px">
       <el-row>
-        <el-form-item label="姓名">
-          <el-input v-model="model.queryForm.name" size="large" placeholder="姓名" />
-        </el-form-item>
-        <el-form-item label="性别">
-          <el-select v-model="model.queryForm.sex" placeholder="性别" size="large" clearable>
+        <el-form-item v-for="(item, index) in model.queryFormItems" :key="index" :label="item.label">
+          <el-select v-if="item.type ==='select'" v-model="item.value" v-bind="item.props">
             <el-option v-for="item in model.sexes" :key="item.value" :value="item.value" :label="item.label"></el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item label="入职日期">
           <el-date-picker
-            v-model="model.queryForm.joinDate"
+            v-else-if="item.type ==='daterange'"
+            v-model="item.value"
             type="daterange"
-            range-separator="至"
-            start-placeholder="入职日期from"
-            end-placeholder="入职日期to">
+            v-bind="item.props">
           </el-date-picker>
+          <el-input v-else v-model="item.value" v-bind="item.props" />
         </el-form-item>
       </el-row>
       <el-row>
         <el-form-item>
-          <el-button type="primary" size="large" :disabled="loading" @click="handleQuery">查询</el-button>
-          <el-button type="primary" size="large" :disabled="loading" @click="openCreateForm">新建</el-button>
-          <el-button type="danger" icon="el-icon-delete" size="large" :disabled="batchActionDisabled" @click="handleBatchDelete">批量删除</el-button>
+          <el-button v-for="(item, index) in model.actions" :key="index" v-bind="item.props" @click="handleAction(item.type)">
+            {{ item.text || ActionDescriptor[item.type].text }}
+          </el-button>
         </el-form-item>
       </el-row>
     </el-form>
@@ -112,7 +107,23 @@
 <script>
 import deepEqual from 'deep-equal'
 import StandardTable from '@/components/standard-table'
-import model from '@/models/employee'
+import model from '@/models/employee-complete'
+import { dateToTime } from './util'
+
+const ActionDescriptor = {
+  query: {
+    text: '查询',
+    method: 'handleQueryAction'
+  },
+  create: {
+    text: '新建',
+    method: 'handleCreateAction'
+  },
+  batchDelete: {
+    text: '批量删除',
+    method: 'handleBatchDeleteAction'
+  }
+}
 
 export default {
   components: {
@@ -123,6 +134,7 @@ export default {
       className: `${this.classPrefix}-v-demo`,
       loading: false,
       model,
+      ActionDescriptor,
       selectedRows: null,
       editFormVisible: false,
       createFormVisible: false
@@ -134,19 +146,29 @@ export default {
     }
   },
   methods: {
+    handleAction (type) {
+      let method = this.ActionDescriptor[type].method
+      this[method].apply(this)
+    },
     handleQuery () {
-      let { name, sex, joinDate } = this.model.queryForm
-
-      if (!joinDate) {
-        joinDate = ['', '']
-      }
-
-      this.model.query = {
-        name,
-        sex,
-        startJoinDate: joinDate[0],
-        endJoinDate: joinDate[1]
-      }
+      this.model.query = this.model.queryFormItems.reduce((acc, cur) => {
+        if (['date', 'daterange'].indexOf(cur.type) > -1) {
+          if (Array.isArray(cur.value)) {
+            acc[cur.key] = cur.value.map(dateToTime).join(',')
+          } else {
+            acc[cur.key] = dateToTime(cur.value)
+          }
+        } else {
+          acc[cur.key] = cur.value
+        }
+        return acc
+      }, {})
+    },
+    handleCreateAction () {
+      this.createFormVisible = true
+    },
+    handleBatchDeleteAction () {
+      this.model.rowsWillDelete = this.selectedRows
     },
     handleTableStateChange (data) {
       let { state } = data
@@ -174,9 +196,6 @@ export default {
         }
       }, 300)
     },
-    openCreateForm () {
-      this.createFormVisible = true
-    },
     cancelCreateForm () {
       this.createFormVisible = false
       this.$refs.createForm.resetFields()
@@ -193,37 +212,7 @@ export default {
           return false
         }
       })
-    },
-    handleBatchDelete () {
-      this.model.rowsWillDelete = this.selectedRows
     }
   }
 }
 </script>
-<style lang="less">
-  .el-row {
-    margin-bottom: 1em;
-  }
-
-  .el-form {
-    .el-input, .el-select {
-      width: 240px;
-    }
-  }
-
-  .el-date-editor .el-range-separator {
-    padding: 0;
-  }
-
-  .el-date-editor--daterange, .el-date-editor--timerange {
-    &.el-input, &.el-input__inner {
-      width: 300px;
-    }
-  }
-
-  .el-standard-query-form {
-    .el-input, .el-select {
-      width: 150px;
-    }
-  }
-</style>

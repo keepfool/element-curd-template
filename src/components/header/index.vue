@@ -11,14 +11,14 @@
 </template>
 <script>
 export default {
+  props: {
+    navs: {
+      type: Array
+    }
+  },
   data () {
     return {
       className: `${this.classPrefix}-c-header`
-    }
-  },
-  computed: {
-    navs () {
-      return this.$store.state.app.navs
     }
   }
 }
