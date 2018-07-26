@@ -56,37 +56,38 @@ export default createCurdModel({
     { prop: 'remark', label: '备注', showOverflowTooltip: true },
     { label: '操作', slotName: 'action', width: 180 }
   ],
-  queryForm: {
-    name: '',
-    sex: '',
-    joinDate: ['', '']
-  },
   queryFormItems: [{
-    label: '姓名',
     key: 'name',
     value: '',
     type: 'input',
-    props: {
+    labelProps: {
+      label: '姓名'
+    },
+    controlProps: {
       size: 'large',
       placeholder: '姓名'
     }
   }, {
-    label: '性别',
     key: 'sex',
     value: '',
     type: 'select',
     options: sexes,
-    props: {
+    labelProps: {
+      label: '性别'
+    },
+    controlProps: {
       size: 'large',
       clearable: true,
       placeholder: '性别'
     }
   }, {
-    label: '入职日期',
     key: 'joinDate',
     value: ['', ''],
     type: 'daterange',
-    props: {
+    labelProps: {
+      label: '入职日期'
+    },
+    controlProps: {
       rangeSeparator: '至',
       startPlaceholder: '入职日期from',
       endPlaceholder: '入职日期to'

@@ -2,19 +2,19 @@
   <div :class="className">
     <h2>雇员列表</h2>
     <!--查询-->
-    <el-form class="el-standard-curd-query-form" :inline="true" :model="model.queryForm" label-width="80px">
+    <el-form class="el-standard-curd-query-form" :inline="true" label-width="80px">
       <el-row>
-        <el-form-item v-for="(item, index) in model.queryFormItems" :key="index" :label="item.label">
-          <el-select v-if="item.type ==='select'" v-model="item.value" v-bind="item.props">
-            <el-option v-for="item in model.sexes" :key="item.value" :value="item.value" :label="item.label"></el-option>
+        <el-form-item v-for="(item, index) in model.queryFormItems" :key="index" v-bind="item.labelProps">
+          <el-select v-if="item.type ==='select'" v-model="item.value" v-bind="item.controlProps">
+            <el-option v-for="item in item.options" :key="item.value" :value="item.value" :label="item.label"></el-option>
           </el-select>
           <el-date-picker
             v-else-if="item.type ==='daterange'"
             v-model="item.value"
             type="daterange"
-            v-bind="item.props">
+            v-bind="item.controlProps">
           </el-date-picker>
-          <el-input v-else v-model="item.value" v-bind="item.props" />
+          <el-input v-else v-model="item.value" v-bind="item.controlProps" />
         </el-form-item>
       </el-row>
       <el-row>
@@ -161,6 +161,9 @@ export default {
     batchActionDisabled () {
       return this.loading || !this.selectedRows || this.selectedRows.length === 0
     }
+  },
+  mounted () {
+    console.log(this.model.createForm)
   },
   methods: {
     callMethod (method, ...args) {
