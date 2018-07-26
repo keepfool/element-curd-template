@@ -56,43 +56,45 @@ export default createCurdModel({
     { prop: 'remark', label: '备注', showOverflowTooltip: true },
     { label: '操作', slotName: 'action', width: 180 }
   ],
-  queryFormItems: [{
-    key: 'name',
-    value: '',
-    type: 'input',
-    labelProps: {
-      label: '姓名'
-    },
-    controlProps: {
-      size: 'large',
-      placeholder: '姓名'
-    }
-  }, {
-    key: 'sex',
-    value: '',
-    type: 'select',
-    options: sexes,
-    labelProps: {
-      label: '性别'
-    },
-    controlProps: {
-      size: 'large',
-      clearable: true,
-      placeholder: '性别'
-    }
-  }, {
-    key: 'joinDate',
-    value: ['', ''],
-    type: 'daterange',
-    labelProps: {
-      label: '入职日期'
-    },
-    controlProps: {
-      rangeSeparator: '至',
-      startPlaceholder: '入职日期from',
-      endPlaceholder: '入职日期to'
-    }
-  }],
+  queryForm: {
+    items: [{
+      key: 'name',
+      value: '',
+      type: 'input',
+      labelProps: {
+        label: '姓名'
+      },
+      controlProps: {
+        size: 'large',
+        placeholder: '姓名'
+      }
+    }, {
+      key: 'sex',
+      value: '',
+      type: 'select',
+      options: sexes,
+      labelProps: {
+        label: '性别'
+      },
+      controlProps: {
+        size: 'large',
+        clearable: true,
+        placeholder: '性别'
+      }
+    }, {
+      key: 'joinDate',
+      value: ['', ''],
+      type: 'daterange',
+      labelProps: {
+        label: '入职日期'
+      },
+      controlProps: {
+        rangeSeparator: '至',
+        startPlaceholder: '入职日期from',
+        endPlaceholder: '入职日期to'
+      }
+    }]
+  },
   actions: [{
     type: 'query',
     text: '查询',
@@ -133,20 +135,88 @@ export default createCurdModel({
       icon: 'el-icon-delete'
     }
   }],
-  createRules: {
-    name: [
-      { required: true, message: '请输入姓名', trigger: 'blur' },
-      { min: 2, message: '长度至少 2 个字符', trigger: 'blur' }
-    ],
-    sex: [
-      { required: true, message: '请选择性别', trigger: 'change' }
-    ],
-    age: [
-      { required: true, message: '年龄不能为空', trigger: 'blur' },
-      { validator: checkAge, trigger: 'blur' }
-    ],
-    joinDate: [
-      { type: 'date', required: true, message: '请选择入职日期', trigger: 'blur' }
-    ]
+  createForm: {
+    items: [{
+      key: 'name',
+      value: '',
+      type: 'input',
+      labelProps: {
+        label: '姓名',
+        labelWidth: '120px',
+        prop: 'name'
+      },
+      controlProps: {
+        placeholder: '输入文字',
+        autoComplete: 'off'
+      }
+    }, {
+      key: 'sex',
+      value: '',
+      type: 'select',
+      options: sexes,
+      labelProps: {
+        label: '性别',
+        labelWidth: '120px',
+        prop: 'sex'
+      },
+      controlProps: {
+        size: 'large',
+        clearable: true,
+        placeholder: '性别'
+      }
+    }, {
+      key: 'joinDate',
+      value: '',
+      type: 'date',
+      labelProps: {
+        label: '入职日期',
+        labelWidth: '120px',
+        prop: 'joinDate'
+      },
+      controlProps: {
+        placeholder: '选择日期'
+      }
+    }, {
+      key: 'age',
+      value: '',
+      type: 'input',
+      dataType: 'number',
+      labelProps: {
+        label: '姓名',
+        labelWidth: '120px',
+        prop: 'age'
+      },
+      controlProps: {
+        placeholder: '输入数字',
+        autoComplete: 'off'
+      }
+    }, {
+      key: 'remark',
+      value: '',
+      type: 'input',
+      labelProps: {
+        label: '备注',
+        labelWidth: '120px'
+      },
+      controlProps: {
+        autoComplete: 'off'
+      }
+    }],
+    rules: {
+      name: [
+        { required: true, message: '请输入姓名', trigger: 'blur' },
+        { min: 2, message: '长度至少 2 个字符', trigger: 'blur' }
+      ],
+      sex: [
+        { required: true, message: '请选择性别', trigger: 'change' }
+      ],
+      age: [
+        { required: true, message: '年龄不能为空', trigger: 'blur' },
+        { validator: checkAge, trigger: 'blur' }
+      ],
+      joinDate: [
+        { type: 'date', required: true, message: '请选择入职日期', trigger: 'blur' }
+      ]
+    }
   }
 })

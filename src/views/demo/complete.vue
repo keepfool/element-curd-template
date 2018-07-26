@@ -4,7 +4,7 @@
     <!--查询-->
     <el-form class="el-standard-curd-query-form" :inline="true" label-width="80px">
       <el-row>
-        <el-form-item v-for="(item, index) in model.queryFormItems" :key="index" v-bind="item.labelProps">
+        <el-form-item v-for="(item, index) in model.queryForm.items" :key="index" v-bind="item.labelProps">
           <el-select v-if="item.type ==='select'" v-model="item.value" v-bind="item.controlProps">
             <el-option v-for="item in item.options" :key="item.value" :value="item.value" :label="item.label"></el-option>
           </el-select>
@@ -51,28 +51,25 @@
 
     <!--新建-->
     <el-dialog title="新建雇员信息" width="480px" :visible.sync="createFormVisible">
-      <el-form class="el-standard-curd-create-form" :model="model.createForm" :rules="model.createRules" ref="createForm">
-        <el-form-item label="姓名" label-width="120px" prop="name">
-          <el-input v-model="model.createForm.name" placeholder="输入文字" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="性别" label-width="120px" prop="sex">
-          <el-select v-model="model.createForm.sex" placeholder="性别" size="large" clearable>
-            <el-option v-for="item in model.sexes" :key="item.value" :value="item.value" :label="item.label"></el-option>
+      <el-form class="el-standard-curd-create-form" :model="model.createForm" :rules="model.createForm.rules" ref="createForm">
+        <el-form-item v-for="(item, index) in model.createForm.items" :key="index" v-bind="item.labelProps">
+          <el-select v-if="item.type ==='select'" v-model="model.createForm[item.key]" v-bind="item.controlProps">
+            <el-option v-for="option in item.options" :key="option.value" :value="option.value" :label="option.label"></el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item label="入职时间" label-width="120px" prop="joinDate">
           <el-date-picker
-            v-model="model.createForm.joinDate"
+            v-else-if="item.type ==='date'"
+            v-model="model.createForm[item.key]"
             type="date"
-            placeholder="选择日期">
+            v-bind="item.controlProps">
           </el-date-picker>
-        </el-form-item>
-        <el-form-item label="年龄" label-width="120px" prop="age">
-          <el-input v-model.number="model.createForm.age" placeholder="输入数字" auto-complete="off">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="备注" label-width="120px">
-          <el-input v-model="model.createForm.remark" auto-complete="off"></el-input>
+          <el-date-picker
+            v-else-if="item.type ==='daterange'"
+            v-model="model.createForm[item.key]"
+            type="daterange"
+            v-bind="item.controlProps">
+          </el-date-picker>
+          <el-input v-else-if="item.dataType === 'number'" v-model.number="model.createForm[item.key]" v-bind="item.controlProps" @change="handleInputChange" />
+          <el-input v-else v-model="model.createForm[item.key]" v-bind="item.controlProps" @change="handleInputChange" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -162,9 +159,6 @@ export default {
       return this.loading || !this.selectedRows || this.selectedRows.length === 0
     }
   },
-  mounted () {
-    console.log(this.model.createForm)
-  },
   methods: {
     callMethod (method, ...args) {
       if (this[method] && typeof this[method] === 'function') {
@@ -176,7 +170,7 @@ export default {
       this.callMethod(method)
     },
     handleQueryAction () {
-      this.model.query = this.model.queryFormItems.reduce((acc, cur) => {
+      this.model.query = this.model.queryForm.items.reduce((acc, cur) => {
         if (['date', 'daterange'].indexOf(cur.type) > -1) {
           if (Array.isArray(cur.value)) {
             acc[cur.key] = cur.value.map(dateToTime).join(',')
@@ -241,6 +235,9 @@ export default {
           return false
         }
       })
+    },
+    handleInputChange () {
+      console.log(this.model.createForm.vModel)
     }
   }
 }
