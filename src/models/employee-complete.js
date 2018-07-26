@@ -115,6 +115,23 @@ export default createCurdModel({
       icon: 'el-icon-delete'
     }
   }],
+  tableRowActions: [{
+    type: 'edit',
+    text: '编辑',
+    props: {
+      type: 'primary',
+      size: 'small',
+      icon: 'el-icon-edit'
+    }
+  }, {
+    type: 'delete',
+    text: '删除',
+    props: {
+      type: 'danger',
+      size: 'small',
+      icon: 'el-icon-delete'
+    }
+  }],
   createRules: {
     name: [
       { required: true, message: '请输入姓名', trigger: 'blur' },

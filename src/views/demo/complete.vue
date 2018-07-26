@@ -19,9 +19,12 @@
       </el-row>
       <el-row>
         <el-form-item>
-          <el-button v-for="(item, index) in model.actions" :key="index" v-bind="item.props" @click="handleAction(item.type)">
-            {{ item.text || ActionDescriptor[item.type].text }}
-          </el-button>
+          <el-button
+            v-for="(item, index) in model.actions"
+            :key="index"
+            v-bind="item.props"
+            :disabled="item.type.indexOf('batch') > -1 ? batchActionDisabled : loading"
+            @click="handleAction(item.type)">{{ item.text || ActionDescriptor[item.type].text }}</el-button>
         </el-form-item>
       </el-row>
     </el-form>
@@ -39,8 +42,10 @@
       @state-change="handleTableStateChange"
       @selection-change="handleSelectionChange">
       <template slot-scope="scope" slot="action">
-        <el-button type="primary" size="small" icon="el-icon-edit" @click="openEditForm(scope.$index, scope.row)">编辑</el-button>
-        <el-button type="danger" size="small" icon="el-icon-delete" @click="handleRowDelete(scope.$index, scope.row)">删除</el-button>
+        <el-button
+          v-for="(item, index) in model.tableRowActions"
+          :key="index" v-bind="item.props"
+          @click="handleTableRowAction(item.type, scope.$index, scope.row)">{{ item.text || TableRowActionDescriptor[item.type].text }}</el-button>
       </template>
     </standard-table>
 
@@ -125,6 +130,17 @@ const ActionDescriptor = {
   }
 }
 
+const TableRowActionDescriptor = {
+  edit: {
+    text: '编辑',
+    method: 'handleTableRowEdit'
+  },
+  delete: {
+    text: '删除',
+    method: 'handleTableRowDelete'
+  }
+}
+
 export default {
   components: {
     StandardTable
@@ -135,6 +151,7 @@ export default {
       loading: false,
       model,
       ActionDescriptor,
+      TableRowActionDescriptor,
       selectedRows: null,
       editFormVisible: false,
       createFormVisible: false
@@ -146,11 +163,16 @@ export default {
     }
   },
   methods: {
+    callMethod (method, ...args) {
+      if (this[method] && typeof this[method] === 'function') {
+        this[method](...args)
+      }
+    },
     handleAction (type) {
       let method = this.ActionDescriptor[type].method
-      this[method].apply(this)
+      this.callMethod(method)
     },
-    handleQuery () {
+    handleQueryAction () {
       this.model.query = this.model.queryFormItems.reduce((acc, cur) => {
         if (['date', 'daterange'].indexOf(cur.type) > -1) {
           if (Array.isArray(cur.value)) {
@@ -170,20 +192,24 @@ export default {
     handleBatchDeleteAction () {
       this.model.rowsWillDelete = this.selectedRows
     },
+    handleTableRowAction (type, index, row) {
+      let method = this.TableRowActionDescriptor[type].method
+      this.callMethod(method, index, row)
+    },
+    handleTableRowEdit (index, row) {
+      this.editFormVisible = true
+      this.model.rowBeforeEdit = row
+      this.model.editForm = { ...row }
+    },
+    handleTableRowDelete (index, row) {
+      this.model.rowsWillDelete = [row]
+    },
     handleTableStateChange (data) {
       let { state } = data
       this.loading = state !== 'FETCHED' && state !== 'ERROR'
     },
     handleSelectionChange (rows) {
       this.selectedRows = rows
-    },
-    handleRowDelete (index, row) {
-      this.model.rowsWillDelete = [row]
-    },
-    openEditForm (index, row) {
-      this.editFormVisible = true
-      this.model.rowBeforeEdit = row
-      this.model.editForm = { ...row }
     },
     saveEditForm () {
       this.editFormVisible = false
